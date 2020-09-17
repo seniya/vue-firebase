@@ -2,19 +2,17 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-      <site-title :title="title"></site-title>
+      <site-title :title="site.title"></site-title>
       <v-spacer/>
-      <v-btn icon @click="save"><v-icon>mdi-check</v-icon></v-btn>
-      <v-btn icon @click="read"><v-icon>mdi-numeric</v-icon></v-btn>
-      <v-btn icon @click="readOne"><v-icon>mdi-account</v-icon></v-btn>
+      <site-sign></site-sign>
     </v-app-bar>
-    <v-navigation-drawer app v-model="drawer">
-      <site-menu></site-menu>
+    <v-navigation-drawer app v-model="drawer" width="400">
+      <site-menu :items="site.menu"></site-menu>
     </v-navigation-drawer>
     <v-main>
       <router-view/>
     </v-main>
-    <site-footer :footer="footer"></site-footer>
+    <site-footer :footer="site.footer"></site-footer>
   </v-app>
 </template>
 
@@ -22,37 +20,62 @@
 import SiteTitle from '@/views/site/title'
 import SiteFooter from '@/views/site/footer'
 import SiteMenu from '@/views/site/menu'
+import SiteSign from '@/views/site/sign'
 
 export default {
-  components: { SiteTitle, SiteFooter, SiteMenu },
+  components: { SiteTitle, SiteFooter, SiteMenu, SiteSign },
   name: 'App',
   data () {
     return {
       drawer: false,
-      items: [],
-      title: '나의 타이틀입니다',
-      footer: '푸터입니다'
+      site: {
+        menu: [
+          {
+            title: 'home',
+            icon: 'mdi-home',
+            subItems: [
+              {
+                title: 'Dashboard',
+                to: '/'
+              },
+              {
+                title: 'About',
+                to: '/about'
+              }
+            ]
+          },
+          {
+            title: 'about',
+            active: true,
+            icon: 'mdi-account',
+            subItems: [
+              {
+                title: 'xxx',
+                to: '/xxx'
+              }
+            ]
+          }
+        ],
+        title: '나의 타이틀입니다',
+        footer: '푸터입니다'
+      }
     }
   },
-  mounted () {
-    console.log(this.$firebase)
+  created () {
+    this.subscribe()
   },
   methods: {
-    save () {
-      console.log('save@@@')
-      this.$firebase.database().ref().child('abcd').set({
-        title: 'abcd', text: 'tttttt'
+    subscribe () {
+      this.$firebase.database().ref().child('site').on('value', (sn) => {
+        const v = sn.val()
+        if (!v) {
+          this.$firebase.database().ref().child('site').set(this.site)
+          return
+        }
+        this.site = v
+      }, (e) => {
+        console.log(e.message)
       })
-    },
-    read () {
-      this.$firebase.database().ref().child('abcd').on('value', (sn) => {
-        console.log(sn)
-        console.log(sn.val())
-      })
-    },
-    async readOne () {
-      const sn = await this.$firebase.database().ref().child('abcd').once('value')
-      console.log(sn.val())
     }
   }
 }
