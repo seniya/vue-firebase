@@ -24,6 +24,21 @@ const routes = [
     path: '/storage',
     name: 'storage',
     component: () => import('../views/storage.vue')
+  },
+  {
+    path: '/editor',
+    name: 'editor',
+    component: () => import('../views/editor.vue')
+  },
+  {
+    path: '*',
+    name: 'error',
+    component: () => import('../views/error.vue')
+  },
+  {
+    path: '/:collection/:document',
+    name: 'collection-document',
+    component: () => import('../views/renderer.vue')
   }
 
 ]
