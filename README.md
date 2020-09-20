@@ -25,7 +25,8 @@ functions/key.json download from console service account key
 ### setting
 
 ```bash
-$ firebase functions:config:set admin.email=xx@abc.com admin.db_url=https://xxx-site.firebaseio.com
+# $ firebase functions:config:set admin.email=xx@abc.com admin.db_url=https://xxx-site.firebaseio.com
+$ firebase functions:config:set admin.email=seniya2@gmail.com admin.db_url=https://seniya2-vf2.firebaseio.com admin.region=asia-northeast1 admin.bucket_url=seniya2-vf2.appspot.com
 $ firebase functions:config:get
 ```
 

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '@/views/Home.vue'
 
 Vue.use(VueRouter)
 
@@ -11,41 +11,22 @@ const routes = [
     component: Home
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue')
-  },
-  {
     path: '/board',
-    name: 'board',
-    component: () => import('../views/board/index.vue')
+    component: () => import('@/views/board')
   },
   {
-    path: '/storage',
-    name: 'storage',
-    component: () => import('../views/storage.vue')
+    path: '/board/:info',
+    component: () => import('@/views/board/info')
   },
   {
-    path: '/editor',
-    name: 'editor',
-    component: () => import('../views/editor.vue')
+    path: '/board/:info/:article',
+    component: () => import('@/views/board/article')
   },
   {
     path: '*',
     name: 'error',
-    component: () => import('../views/error.vue')
-  },
-  {
-    path: '/:collection/:document',
-    name: 'collection-document',
-    component: () => import('../views/renderer.vue')
-  },
-  {
-    path: '/:collection/:document/:action',
-    name: 'collection-document-action',
-    component: () => import('../views/renderer')
+    component: () => import('@/views/error')
   }
-
 ]
 
 const router = new VueRouter({
