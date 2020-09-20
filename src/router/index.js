@@ -39,6 +39,11 @@ const routes = [
     path: '/:collection/:document',
     name: 'collection-document',
     component: () => import('../views/renderer.vue')
+  },
+  {
+    path: '/:collection/:document/:action',
+    name: 'collection-document-action',
+    component: () => import('../views/renderer')
   }
 
 ]

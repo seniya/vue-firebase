@@ -29,6 +29,13 @@ $ firebase functions:config:set admin.email=xx@abc.com admin.db_url=https://xxx-
 $ firebase functions:config:get
 ```
 
+
+```bash
+$ firebase deploy --only functions
+$ firebase deploy --only database
+```
+
+
 ## hosting
 
 ### Dependecies install
