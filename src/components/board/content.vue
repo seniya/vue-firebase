@@ -1,22 +1,30 @@
 <template>
-  <v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-    <v-card outlined :tile="$vuetify.breakpoint.xs" v-if="board">
+  <v-container v-if="!loaded" fluid>
+    <v-skeleton-loader type="card"></v-skeleton-loader>
+  </v-container>
+  <v-container v-else-if="loaded && !board" fluid>
+    <v-alert type="warning" border="left" class="mb-0">
+      게시판이 없습니다
+    </v-alert>
+  </v-container>
+  <v-container v-else fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
+    <v-card outlined :tile="$vuetify.breakpoint.xs">
       <v-toolbar color="transparent" dense flat>
-        <!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
-        <v-sheet width="90" class="mr-4">
+        <v-sheet width="100" class="mr-4">
           <v-select
             :value="getCategory"
             :items="board.categories"
             @change="changeCategory"
             dense
-            solo
-            background-color="info"
-            dark
+            outlined
             single-line
             flat
             hide-details/>
         </v-sheet>
-        <v-toolbar-title v-text="board.title"></v-toolbar-title>
+        <template v-if="!$vuetify.breakpoint.xs">
+          <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
+          <span v-text="board.title"></span>
+        </template>
 
         <v-spacer/>
         <v-btn icon @click="dialog=true"><v-icon>mdi-information-outline</v-icon></v-btn>
@@ -28,6 +36,10 @@
         </template>
       </v-toolbar>
       <v-divider/>
+      <v-card-title v-if="$vuetify.breakpoint.xs">
+        <v-icon color="error" left v-if="newCheck(board.updatedAt)">mdi-fire</v-icon>
+        <span v-text="board.title"></span>
+      </v-card-title>
       <board-article :boardId="boardId" :board="board" :category="category"></board-article>
       <v-dialog v-model="dialog" max-width="300">
         <v-card>
@@ -103,7 +115,7 @@
               <v-list-item-title>
                 설명
               </v-list-item-title>
-              <v-list-item-subtitle class="comment" v-text="board.description"></v-list-item-subtitle>
+              <v-list-item-subtitle class="white-space" v-text="board.description"></v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-divider/>
@@ -114,13 +126,13 @@
         </v-card>
       </v-dialog>
     </v-card>
-    <v-skeleton-loader type="card" v-else></v-skeleton-loader>
   </v-container>
 </template>
 <script>
 import BoardArticle from './article/index'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+import newCheck from '@/util/newCheck'
 export default {
   components: { BoardArticle, DisplayTime, DisplayUser },
   props: ['boardId', 'category', 'tag'],
@@ -129,7 +141,9 @@ export default {
       unsubscribe: null,
       board: null,
       loading: false,
-      dialog: false
+      dialog: false,
+      newCheck,
+      loaded: false
     }
   },
   watch: {
@@ -156,7 +170,9 @@ export default {
     subscribe () {
       if (this.unsubscribe) this.unsubscribe()
       const ref = this.$firebase.firestore().collection('boards').doc(this.boardId)
+      this.loaded = false
       this.unsubscribe = ref.onSnapshot(doc => {
+        this.loaded = true
         if (!doc.exists) return this.write()
         const item = doc.data()
         item.createdAt = item.createdAt.toDate()
@@ -169,7 +185,7 @@ export default {
       this.$router.push({ path: this.$route.path, query: { action: 'write' } })
     },
     async articleWrite () {
-      this.$router.push({ path: this.$route.path + '/new', query: { action: 'write' } })
+      this.$router.push({ path: this.$route.path + '/' + new Date().getTime(), query: { action: 'write' } })
     },
     changeCategory (item) {
       if (item === '전체') this.$router.push(this.$route.path)
@@ -178,8 +194,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.white-space {
-  white-space: pre-wrap;
-}
-</style>
